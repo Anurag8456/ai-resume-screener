@@ -1,106 +1,116 @@
-function CircularScore({ score }) {
-    const radius = 70;
+function ScoreRing({ score, hasResult }) {
+    const radius = 52;
     const circumference = 2 * Math.PI * radius;
-    const pct = Math.max(0, Math.min(100, score ?? 0));
+    const pct = hasResult ? Math.max(0, Math.min(100, score ?? 0)) : 0;
     const offset = circumference - (pct / 100) * circumference;
 
     return (
-        <svg className="score-ring" width="180" height="180" viewBox="0 0 180 180">
-            <circle cx="90" cy="90" r={radius} className="score-ring-bg" />
+        <svg width="140" height="140" viewBox="0 0 140 140" className="score-ring-svg">
+            <circle cx="70" cy="70" r={radius} className="ring-bg" />
             <circle
-                cx="90" cy="90" r={radius}
-                className="score-ring-fill"
+                cx="70" cy="70" r={radius}
+                className="ring-fill"
                 style={{ strokeDasharray: circumference, strokeDashoffset: offset }}
             />
-            <text x="90" y="82" textAnchor="middle" className="score-ring-value">{Math.round(pct)}%</text>
-            <text x="90" y="104" textAnchor="middle" className="score-ring-label">MATCH</text>
+            <text x="70" y="64" textAnchor="middle" className="ring-value">
+                {hasResult ? Math.round(pct) : '--'}
+            </text>
+            <text x="70" y="86" textAnchor="middle" className="ring-total">out of 100</text>
         </svg>
     );
 }
 
-function RadarChart({ skillsPct, experiencePct, overallPct }) {
-    const center = 90;
-    const maxR = 70;
-    const axes = [
-        { label: 'SKILLS', value: skillsPct, angle: -90 },
-        { label: 'EXPERIENCE', value: experiencePct, angle: 30 },
-        { label: 'OVERALL', value: overallPct, angle: 150 },
-    ];
-
-    const toPoint = (angleDeg, value) => {
-        const angle = (angleDeg * Math.PI) / 180;
-        const r = (value / 100) * maxR;
-        return [center + r * Math.cos(angle), center + r * Math.sin(angle)];
-    };
-
-    const outerPoint = (angleDeg) => {
-        const angle = (angleDeg * Math.PI) / 180;
-        return [center + maxR * Math.cos(angle), center + maxR * Math.sin(angle)];
-    };
-
-    const dataPoints = axes.map((a) => toPoint(a.angle, a.value).join(',')).join(' ');
-
+function ScaleBar({ score, hasResult }) {
+    const pct = hasResult ? Math.max(0, Math.min(100, score ?? 0)) : 0;
     return (
-        <svg className="radar-chart" width="180" height="180" viewBox="0 0 180 180">
-            {[0.33, 0.66, 1].map((f, i) => (
-                <polygon
-                    key={i}
-                    points={axes.map((a) => {
-                        const [ox, oy] = outerPoint(a.angle);
-                        return `${center + (ox - center) * f},${center + (oy - center) * f}`;
-                    }).join(' ')}
-                    className="radar-grid"
-                />
-            ))}
-            <polygon points={dataPoints} className="radar-fill" />
-            {axes.map((a, i) => {
-                const [lx, ly] = outerPoint(a.angle);
-                return <text key={i} x={lx} y={ly} textAnchor="middle" className="radar-label">{a.label}</text>;
-            })}
-        </svg>
+        <div className="scale-bar-wrap">
+            <div className="scale-bar">
+                <div className="scale-marker" style={{ left: `${pct}%` }} />
+            </div>
+            <div className="scale-labels">
+                <span>0</span>
+                <span>{hasResult ? 'YOUR SCORE' : 'AWAITING RESUME'}</span>
+                <span>100</span>
+            </div>
+        </div>
+    );
+}
+
+function CategoryBar({ label, value, hasResult }) {
+    return (
+        <div className="category-row">
+            <div className="category-top">
+                <span>{label}</span>
+                <span>{hasResult ? `${Math.round(value)}/100` : '—'}</span>
+            </div>
+            <div className="category-track">
+                <div className="category-fill" style={{ width: hasResult ? `${value}%` : '0%' }} />
+            </div>
+        </div>
     );
 }
 
 function ResultCard({ result }) {
-    if (!result) return null;
-
-    const matching = result.matchingSkills || [];
-    const missing = result.missingSkills || [];
+    const hasResult = !!result;
+    const matching = result?.matchingSkills || [];
+    const missing = result?.missingSkills || [];
     const skillsPct = matching.length + missing.length > 0
         ? (matching.length / (matching.length + missing.length)) * 100
         : 0;
-    const experiencePct = result.experienceMet ? 100 : 35;
-    const overallPct = result.score ?? 0;
+    const experiencePct = result?.experienceMet ? 100 : 35;
+    const overallPct = result?.score ?? 0;
 
     return (
-        <div className="dashboard">
-            <div className="dashboard-header">
-                <span className="panel-label">MATCH_ANALYSIS.LOG</span>
-                <h2>{result.candidateName || 'CANDIDATE_UNKNOWN'}</h2>
+        <div className="preview-panel">
+            <div className="preview-chrome">
+                <span className="dot dot-red" />
+                <span className="dot dot-yellow" />
+                <span className="dot dot-green" />
+                <span className="preview-tab">MATCH REPORT</span>
             </div>
 
-            <div className="dashboard-charts">
-                <CircularScore score={overallPct} />
-                <RadarChart skillsPct={skillsPct} experiencePct={experiencePct} overallPct={overallPct} />
-            </div>
-
-            <div className="skills-section">
-                <span className="panel-label">MATCHING_SKILLS</span>
-                <div className="chip-list">
-                    {matching.map((skill, i) => <span key={i} className="chip chip-cyan">{skill}</span>)}
+            <div className="preview-body">
+                <div className="preview-top">
+                    <ScoreRing score={overallPct} hasResult={hasResult} />
+                    <div className="preview-summary">
+                        <h3>{hasResult ? (result.candidateName || 'Your Match Score') : 'Your match score'}</h3>
+                        <p>
+                            {hasResult
+                                ? 'Here is how your resume stacks up against this role.'
+                                : 'Upload a resume and job description to see your real score here.'}
+                        </p>
+                    </div>
                 </div>
-            </div>
 
-            <div className="skills-section">
-                <span className="panel-label">MISSING_SKILLS</span>
-                <div className="chip-list">
-                    {missing.map((skill, i) => <span key={i} className="chip chip-purple">{skill}</span>)}
+                <ScaleBar score={overallPct} hasResult={hasResult} />
+
+                <div className="category-list">
+                    <CategoryBar label="Skills Match" value={skillsPct} hasResult={hasResult} />
+                    <CategoryBar label="Experience Alignment" value={experiencePct} hasResult={hasResult} />
                 </div>
-            </div>
 
-            <div className="verdict-panel">
-                <span className="panel-label">VERDICT</span>
-                <p>{result.verdict}</p>
+                {hasResult && (
+                    <>
+                        <div className="skills-section">
+                            <span className="field-label">Matching skills</span>
+                            <div className="chip-list">
+                                {matching.map((skill, i) => <span key={i} className="chip chip-green">{skill}</span>)}
+                            </div>
+                        </div>
+
+                        <div className="skills-section">
+                            <span className="field-label">Missing skills</span>
+                            <div className="chip-list">
+                                {missing.map((skill, i) => <span key={i} className="chip chip-red">{skill}</span>)}
+                            </div>
+                        </div>
+
+                        <div className="verdict-box">
+                            <span className="field-label">Verdict</span>
+                            <p>{result.verdict}</p>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );
