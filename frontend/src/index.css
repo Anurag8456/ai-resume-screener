@@ -8,3 +8,28 @@ body {
   margin: 0;
   font-family: 'Inter', sans-serif;
 }
+
+/* Skeleton loading animation */
+.skeleton-text,
+.skeleton-chip {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  height: 1rem;
+}
+
+.skeleton-chip {
+  display: inline-block;
+  width: 6rem;
+  height: 1.5rem;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

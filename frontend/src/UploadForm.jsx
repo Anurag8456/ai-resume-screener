@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import axios from 'axios';
 
-function UploadForm({ onResult }) {
+function UploadForm({ onResult, onStart, onEnd }) {
     const [resumeFile, setResumeFile] = useState(null);
     const [jobDescription, setJobDescription] = useState('');
     const [loading, setLoading] = useState(false);
@@ -44,6 +44,7 @@ function UploadForm({ onResult }) {
         formData.append('resume', resumeFile);
         formData.append('jobDescription', jobDescription);
 
+        if (onStart) onStart();
         setLoading(true);
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/screen`, formData, {
@@ -55,6 +56,7 @@ function UploadForm({ onResult }) {
             setError('Something went wrong. Confirm the backend is running and try again.');
         } finally {
             setLoading(false);
+            if (onEnd) onEnd();
         }
     };
 

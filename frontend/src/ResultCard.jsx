@@ -90,7 +90,7 @@ function ResultCard({ result }) {
                 </div>
 
                 {hasResult && (
-                    <>
+                    <div className="result-content">
                         <div className="skills-section">
                             <span className="field-label">Matching skills</span>
                             <div className="chip-list">
@@ -109,7 +109,7 @@ function ResultCard({ result }) {
                             <span className="field-label">Verdict</span>
                             <p>{result.verdict}</p>
                         </div>
-                    </>
+                    </div>
                 )}
             </div>
         </div>
