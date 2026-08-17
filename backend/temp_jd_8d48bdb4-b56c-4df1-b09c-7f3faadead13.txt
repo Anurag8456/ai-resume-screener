@@ -1,0 +1,64 @@
+An SDE-1 is an entry-level software engineer responsible for writing clean code, implementing features, debugging, and learning software development practices under guidance.
+Overview
+An SDE-1 is typically a recent graduate or a developer with 0–2 years of experience. This role serves as the starting point in a software engineering career, focusing on learning, growth, and contributing to projects under the supervision of senior engineers 
+bosscoderacademy.com
+bosscoderacademy.com
++2
+. SDE-1s work on clearly defined tasks, often implementing small modules or features of larger systems 
+bosscoderacademy.com
+bosscoderacademy.com
++1
+.
+
+Key Responsibilities
+Coding and Development: Write clean, maintainable, and production-ready code according to design specifications. Focus is usually on smaller modules or less complex systems 
+GeeksforGeeks
+GeeksforGeeks
++1
+.
+Feature Implementation: Develop minor features or components as part of larger projects, following guidance from senior engineers 
+LinkedIn
+LinkedIn
++1
+.
+Debugging and Problem Solving: Identify, troubleshoot, and fix software issues to ensure stability and performance 
+GeeksforGeeks
+GeeksforGeeks
++1
+.
+Collaboration: Participate in code reviews, work closely with team members, and communicate with cross-functional teams to understand requirements and project progress 
+GeeksforGeeks
+GeeksforGeeks
++1
+.
+Learning and Growth: Continuously improve technical skills, learn new technologies, and gain experience through mentorship and practical work 
+GeeksforGeeks
+GeeksforGeeks
++1
+.
+Required Skills
+Programming Proficiency: Comfortable coding in at least one popular language such as Java, Python, C++, or JavaScript 
+LinkedIn
+LinkedIn
++1
+.
+Computer Science Fundamentals: Knowledge of data structures, algorithms, object-oriented programming (OOP), and basic system design 
+bosscoderacademy.com
+bosscoderacademy.com
++1
+.
+Version Control: Basic understanding of Git or similar tools for collaboration 
+LinkedIn
+LinkedIn
+.
+Problem-Solving: Ability to tackle simple to moderately complex coding problems, including arrays, strings, sorting, and searching algorithms 
+LinkedIn
+LinkedIn
+.
+Communication: Effective collaboration and clear communication with team members and stakeholders 
+GeeksforGeeks
+GeeksforGeeks
++1
+.
+Career Progression
+Starting as an SDE-1 provides a foundation for advancing to SDE-2, where engineers handle more complex systems, may lead smaller projects, and mentor juniors. With experience, one can progress to senior roles, including SDE-3 or Principal SDE, which involve strategic project management, system design, and leadership responsibilities

@@ -1,0 +1,116 @@
+{
+  "agents": {
+    "agent-1786977627411-uxgulp": {
+      "agentId": "agent-1786977627411-uxgulp",
+      "agentType": "coder",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic",
+        "timeout": 300,
+        "autoTools": true
+      },
+      "createdAt": "2026-08-17T14:40:27.411Z",
+      "model": "sonnet",
+      "modelRoutedBy": "default"
+    },
+    "agent-1786978176271-6b3b8w": {
+      "agentId": "agent-1786978176271-6b3b8w",
+      "agentType": "analyst",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic",
+        "timeout": 300,
+        "autoTools": true
+      },
+      "createdAt": "2026-08-17T14:49:36.271Z",
+      "model": "sonnet",
+      "modelRoutedBy": "default"
+    },
+    "agent-1786978185216-157j27": {
+      "agentId": "agent-1786978185216-157j27",
+      "agentType": "reviewer",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic",
+        "timeout": 300,
+        "autoTools": true
+      },
+      "createdAt": "2026-08-17T14:49:45.216Z",
+      "model": "sonnet",
+      "modelRoutedBy": "default"
+    },
+    "agent-1786978193002-7kishi": {
+      "agentId": "agent-1786978193002-7kishi",
+      "agentType": "analyst",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic",
+        "timeout": 300,
+        "autoTools": true
+      },
+      "createdAt": "2026-08-17T14:49:53.003Z",
+      "model": "sonnet",
+      "modelRoutedBy": "default"
+    },
+    "agent-1786978348083-zit41z": {
+      "agentId": "agent-1786978348083-zit41z",
+      "agentType": "analyst",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic",
+        "task": "You are a strict data extractor. Read the provided resume text and extract the candidate's skills, experience, and education into a JSON format. Do not guess or infer any skills that are not explicitly written. Output ONLY the JSON.",
+        "timeout": 300,
+        "autoTools": true
+      },
+      "createdAt": "2026-08-17T14:52:28.286Z",
+      "model": "opus",
+      "modelRoutedBy": "router",
+      "provider": "anthropic"
+    },
+    "agent-1786978356582-fbygz6": {
+      "agentId": "agent-1786978356582-fbygz6",
+      "agentType": "reviewer",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic",
+        "task": "You are a strict auditor. I will give you a raw resume and a JSON list of extracted skills. Cross-reference every single skill in the JSON against the raw resume. If a skill is not explicitly mentioned in the raw text, delete it from the JSON. Output only the verified JSON.",
+        "timeout": 300,
+        "autoTools": true
+      },
+      "createdAt": "2026-08-17T14:52:36.594Z",
+      "model": "opus",
+      "modelRoutedBy": "router",
+      "provider": "anthropic"
+    },
+    "agent-1786978362967-qc3bds": {
+      "agentId": "agent-1786978362967-qc3bds",
+      "agentType": "analyst",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic",
+        "task": "Compare the strictly verified JSON skills against the provided Job Description. Assign a match score from 0-100 based on explicit matches. Write a 2-sentence summary of why they match or fall short. Output the final result as a JSON object containing 'score' and 'summary'.",
+        "timeout": 300,
+        "autoTools": true
+      },
+      "createdAt": "2026-08-17T14:52:42.975Z",
+      "model": "opus",
+      "modelRoutedBy": "router",
+      "provider": "anthropic"
+    }
+  },
+  "version": "3.0.0"
+}
