@@ -1,11 +1,10 @@
 package com.resumescreener.backend.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.resumescreener.backend.dto.JobDescriptionData;
 import com.resumescreener.backend.dto.MatchResultData;
-import org.springframework.scheduling.annotation.Async;
+import com.resumescreener.backend.dto.ResumeData;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ResumeScreeningService {
@@ -17,35 +16,68 @@ public class ResumeScreeningService {
         this.geminiService = geminiService;
     }
 
-    @Async
-    public CompletableFuture<MatchResultData> runRufloScreeningSwarm(String resumeText, String jdText) {
-        try {
-            // STEP 1: Extractor Agent (Strict Data Extraction)
-            String extractorSystem = "You are a strict data extractor. Read the provided resume text and extract the candidate's skills, experience, and education into a JSON format. Do not guess or infer any skills that are not explicitly written. Output ONLY the JSON.";
-            String extractedJson = geminiService.callGemini(extractorSystem, "Extract from this resume:\n\n" + resumeText);
+    public ResumeData parseResume(String resumeText) throws Exception {
+        String systemPrompt = """
+                You are an expert resume parser.
+                Extract information from the resume based on its meaning,
+                not only based on exact section headings.
+                Return ONLY valid JSON with these fields:
+                name, email, phone, totalExperienceYears, skills (array of strings),
+                experiences (array of objects with company, role, duration, description, skillsUsed),
+                education (array of strings), projects (array of strings), certifications (array of strings).
+                Rules:
+                1. Do not invent information.
+                2. If a value is not available, return null.
+                3. If a list has no information, return an empty list.
+                4. Include internships inside experiences.
+                """;
 
-            // STEP 2: Verifier Agent (Anti-Hallucination Audit)
-            String verifierSystem = "You are a strict auditor. I will give you a raw resume and a JSON list of extracted skills. Cross-reference every single skill in the JSON against the raw resume. If a skill is not explicitly mentioned in the raw text, delete it from the JSON. Output only the verified JSON.";
-            String verifiedJson = geminiService.callGemini(verifierSystem, "Raw Resume:\n" + resumeText + "\n\nExtracted JSON:\n" + extractedJson);
+        String userPrompt = "Parse the following resume:\n\n" + resumeText;
 
-            // STEP 3: Evaluator Agent (Scoring & Summary)
-            String evaluatorSystem = "Compare the strictly verified JSON skills against the provided Job Description. Assign a match score from 0-100 based on explicit matches. Write a 2-sentence summary of why they match or fall short. Output the final result as a JSON object containing exact keys: candidateName, score, matchingSkills, missingSkills, experienceMet, verdict.";
-            String evaluationPrompt = "Job Description:\n" + jdText + "\n\nVerified Candidate Data:\n" + verifiedJson;
+        String jsonResponse = geminiService.callGemini(systemPrompt, userPrompt);
+        return objectMapper.readValue(jsonResponse, ResumeData.class);
+    }
 
-            String finalRawResponse = geminiService.callGemini(evaluatorSystem, evaluationPrompt);
+    public JobDescriptionData parseJobDescription(String jdText) throws Exception {
+        String systemPrompt = """
+                You are an expert HR assistant.
+                Analyze job descriptions and extract structured information.
+                Return ONLY valid JSON with these fields:
+                role, requiredSkills (array of strings), preferredSkills (array of strings),
+                minimumExperience (number or null), educationRequirements (array of strings),
+                responsibilities (array of strings).
+                If minimum experience is not mentioned, return null.
+                If information for a list is missing, return an empty list.
+                Do not invent information.
+                """;
 
-            // Clean markdown formatting if present
-            String jsonResponse = finalRawResponse.replace("```json", "")
-                    .replace("```", "")
-                    .trim();
+        String userPrompt = "Analyze the following job description:\n\n" + jdText;
 
-            // Map directly to your DTO
-            MatchResultData finalResult = objectMapper.readValue(jsonResponse, MatchResultData.class);
-            return CompletableFuture.completedFuture(finalResult);
+        String jsonResponse = geminiService.callGemini(systemPrompt, userPrompt);
+        return objectMapper.readValue(jsonResponse, JobDescriptionData.class);
+    }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return CompletableFuture.failedFuture(e);
-        }
+    public MatchResultData scoreMatch(JobDescriptionData job, ResumeData resume) throws Exception {
+        String prompt = """
+                You are an HR recruiter.
+                Compare the candidate's resume with the job description.
+
+                JOB DESCRIPTION:
+                %s
+
+                CANDIDATE RESUME:
+                %s
+
+                Return ONLY valid JSON with these fields:
+                candidateName, score (0 to 100), matchingSkills (array of strings),
+                missingSkills (array of strings), experienceMet (true/false), verdict (short string).
+                Keep the verdict concise and easy to read.
+                """.formatted(
+                objectMapper.writeValueAsString(job),
+                objectMapper.writeValueAsString(resume)
+        );
+
+        String jsonResponse = geminiService.callGemini("", prompt);
+        return objectMapper.readValue(jsonResponse, MatchResultData.class);
     }
 }
